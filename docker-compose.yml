@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: aziz
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - spring-demo
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring_boot_app
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/mydatabase
+      DB_USERNAME: aziz
+      DB_PASSWORD: postgres
+      ACTIVE_PROFILE: dev
+    ports:
+      - "8081:8081"
+    networks:
+      - spring-demo
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+
+networks:
+  spring-demo:
