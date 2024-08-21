@@ -73,12 +73,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- MockMVC for testing controllers -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<scope>test</scope>
-		</dependency>
 
 		<!-- JUnit -->
 		<dependency>
