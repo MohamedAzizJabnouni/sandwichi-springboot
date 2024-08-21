@@ -3,41 +3,27 @@ package com.example.Sandwichi.controllers;
 import com.example.Sandwichi.entities.Client;
 import com.example.Sandwichi.repositories.ClientRepository;
 import com.example.Sandwichi.services.ClientService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitConfig
-@WebMvcTest(ClientController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class ClientControllerIntegrationTest {
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ClientRepository clientRepository;
-
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
 
     @Test
     public void testGetAllClients() throws Exception {
@@ -72,7 +58,7 @@ public class ClientControllerIntegrationTest {
 
         // Perform POST request
         mockMvc.perform(post("/clients")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(clientJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nom").value("Michael"))

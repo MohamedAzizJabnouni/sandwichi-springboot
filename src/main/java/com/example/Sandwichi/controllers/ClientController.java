@@ -3,6 +3,7 @@ package com.example.Sandwichi.controllers;
 import com.example.Sandwichi.entities.Client;
 import com.example.Sandwichi.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,9 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteClient(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+
         clientService.deleteClient(id);
+        return ResponseEntity.noContent().build();
     }
 }
