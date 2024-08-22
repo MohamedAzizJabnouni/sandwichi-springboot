@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    sh 'mvn clean install'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    // Run tests
+                    sh 'mvn test'
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh 'docker-compose up --build -d .'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+            // Clean up the workspace after the build
+            cleanWs()
+
+             // Optionally, bring down the Docker Compose environment
+             // sh 'docker-compose down'
+        }
+    }
+}
