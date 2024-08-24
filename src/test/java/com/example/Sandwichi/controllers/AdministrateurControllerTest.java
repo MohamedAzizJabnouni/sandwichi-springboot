@@ -67,10 +67,18 @@ public class AdministrateurControllerTest {
 
     @Test
     public void testDeleteAdministrateur() {
-        doNothing().when(administrateurService).deleteAdministrateur(1L);
+        // Arrange
+        Long id = 1L;
+        Administrateur admin = new Administrateur("aziz", "jb", "aziz.jb@example.com");
+        admin.setId(id);
+        when(administrateurService.findAdministrateurById(id)).thenReturn(Optional.of(admin));
+        doNothing().when(administrateurService).deleteAdministrateur(id);
 
-        administrateurController.deleteAdministrateur(1L);
+        // Act
+        administrateurController.deleteAdministrateur(id);
 
-        verify(administrateurService, times(1)).deleteAdministrateur(1L);
+        // Assert
+        verify(administrateurService, times(1)).deleteAdministrateur(id);
+        verify(administrateurService, times(1)).findAdministrateurById(id);
     }
 }
