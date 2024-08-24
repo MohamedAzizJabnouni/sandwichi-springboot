@@ -3,6 +3,7 @@ package com.example.Sandwichi.controllers;
 import com.example.Sandwichi.entities.Administrateur;
 import com.example.Sandwichi.services.AdministrateurService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,12 @@ public class AdministrateurController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAdministrateur(@PathVariable Long id) {
-        administrateurService.deleteAdministrateur(id);
-    }
-}
+    public ResponseEntity<Void> deleteAdministrateur(@PathVariable Long id) {
+        Optional<Administrateur> administrateur = administrateurService.findAdministrateurById(id);
+        if (administrateur.isPresent()) {
+            administrateurService.deleteAdministrateur(id);
+            return ResponseEntity.noContent().build();  // Returns 204 No Content
+        } else {
+            return ResponseEntity.notFound().build();  // Returns 404 Not Found
+        }
+    }}

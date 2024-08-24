@@ -1,18 +1,19 @@
 package com.example.Sandwichi.controllers;
 
 import com.example.Sandwichi.entities.Administrateur;
+import com.example.Sandwichi.repositories.AdministrateurRepository;
 import com.example.Sandwichi.services.AdministrateurService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -24,14 +25,24 @@ public class AdministrateurControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private AdministrateurRepository administrateurRepository;
+
+    @Autowired
     private AdministrateurService administrateurService;
+
+    private List<Administrateur> administrateurs;
+
+    @BeforeEach
+    public void setup() {
+        // Clear existing data and set up test data
+        administrateurRepository.deleteAll(); // Clear the repository
+        administrateurs = new ArrayList<>();
+        administrateurs.add(administrateurService.saveAdministrateur(new Administrateur("John", "Doe", "john.doe@example.com")));
+        administrateurs.add(administrateurService.saveAdministrateur(new Administrateur("Jane", "Doe", "jane.doe@example.com")));
+    }
 
     @Test
     public void testGetAllAdministrateurs() throws Exception {
-        Administrateur admin1 = new Administrateur("John", "Doe", "john.doe@example.com");
-        Administrateur admin2 = new Administrateur("Jane", "Doe", "jane.doe@example.com");
-        given(administrateurService.findAllAdministrateurs()).willReturn(Arrays.asList(admin1, admin2));
-
         mockMvc.perform(get("/administrateurs"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -41,10 +52,9 @@ public class AdministrateurControllerIntegrationTest {
 
     @Test
     public void testGetAdministrateurById() throws Exception {
-        Administrateur admin = new Administrateur("John", "Doe", "john.doe@example.com");
-        given(administrateurService.findAdministrateurById(1L)).willReturn(Optional.of(admin));
+        Administrateur admin = administrateurs.get(0);
 
-        mockMvc.perform(get("/administrateurs/1"))
+        mockMvc.perform(get("/administrateurs/{id}", admin.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.nom").value("John"));
@@ -52,22 +62,25 @@ public class AdministrateurControllerIntegrationTest {
 
     @Test
     public void testCreateAdministrateur() throws Exception {
-        Administrateur admin = new Administrateur("John", "Doe", "john.doe@example.com");
-        given(administrateurService.saveAdministrateur(any(Administrateur.class))).willReturn(admin);
+        String adminJson = "{\"nom\":\"Paul\",\"prenom\":\"Smith\",\"email\":\"paul.smith@example.com\"}";
 
         mockMvc.perform(post("/administrateurs")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nom\":\"John\",\"prenom\":\"Doe\",\"email\":\"john.doe@example.com\"}"))
+                        .content(adminJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.nom").value("John"));
+                .andExpect(jsonPath("$.nom").value("Paul"));
     }
 
     @Test
     public void testDeleteAdministrateur() throws Exception {
-        willDoNothing().given(administrateurService).deleteAdministrateur(1L);
+        Administrateur admin = administrateurs.get(0);
 
-        mockMvc.perform(delete("/administrateurs/1"))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/administrateurs/{id}", admin.getId()))
+                .andExpect(status().isNoContent());
+
+        // Verify the administrateur was deleted
+        mockMvc.perform(get("/administrateurs/{id}", admin.getId()))
+                .andExpect(status().isNotFound());
     }
 }

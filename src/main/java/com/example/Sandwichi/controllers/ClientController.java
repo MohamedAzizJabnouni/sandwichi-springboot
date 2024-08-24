@@ -2,6 +2,7 @@ package com.example.Sandwichi.controllers;
 
 import com.example.Sandwichi.entities.Client;
 import com.example.Sandwichi.services.ClientService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +33,12 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-
-        clientService.deleteClient(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteClient(@PathVariable Long id){
+        try {
+            clientService.deleteClient(id);
+            return ResponseEntity.noContent().build();  // 204 No Content
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();  // 404 Not Found
+        }
     }
 }
