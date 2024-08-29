@@ -1,7 +1,9 @@
 pipeline {
     agent any
-    tools{maven 'Maven 3.9.8'
-                jdk 'jdk17'}
+    tools {
+        maven 'Maven 3.9.8'
+        jdk 'jdk17'
+        }
 
     stages {
         stage('Build') {
@@ -25,6 +27,16 @@ pipeline {
                     // Build the Docker image
                     sh 'docker-compose up --build -d .'
                 }
+            }
+        }
+        stage('Check JDK') {
+            steps {
+                sh 'java -version'
+            }
+        }
+        stage('Check Maven') {
+            steps {
+                sh 'mvn -v'
             }
         }
     }

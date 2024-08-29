@@ -3,6 +3,7 @@ package com.example.Sandwichi.controllers;
 import com.example.Sandwichi.entities.Client;
 import com.example.Sandwichi.repositories.ClientRepository;
 import com.example.Sandwichi.services.ClientService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,13 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class ClientControllerIntegrationTest {
 
     @Autowired
@@ -79,9 +82,13 @@ public class ClientControllerIntegrationTest {
         Client client = new Client("Jane", "Doe", "jane.doe@example.com", Collections.emptyList());
         client = clientRepository.save(client); // Save and get the generated ID
 
+        log.info("id de le client {}",client.getId());
+
         // Act & Assert
         mockMvc.perform(delete("/clients/{id}", client.getId()))
                 .andExpect(status().isNoContent()); // Expect 204 No Content or 200 OK
+        assertTrue(clientRepository.findById(client.getId()).isEmpty());
+
     }
 
 

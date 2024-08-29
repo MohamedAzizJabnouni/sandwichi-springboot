@@ -3,6 +3,7 @@ package com.example.Sandwichi.controllers;
 import com.example.Sandwichi.entities.Administrateur;
 import com.example.Sandwichi.repositories.AdministrateurRepository;
 import com.example.Sandwichi.services.AdministrateurService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class AdministrateurControllerIntegrationTest {
+
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -74,16 +80,20 @@ public class AdministrateurControllerIntegrationTest {
 
     @Test
     public void testDeleteAdministrateur() throws Exception {
+
+
         // Arrange
         Administrateur admin = new Administrateur("mohamed", "jabnouni", "mohamed.jabnouni@example.com");
         admin = administrateurRepository.save(admin); // Save and get the generated ID
 
-        // Act & Assert
+        log.info("id de l'administrateur {}", admin.getId());
 
         // Perform delete and expect a successful deletion
+
         mockMvc.perform(delete("/administrateurs/{id}", admin.getId()))
                 .andExpect(status().isNoContent()); // or status().isOk() depending on your API
-
+        log.info("getting administrateur {}",administrateurRepository.findById(admin.getId()));
+        assertTrue(administrateurRepository.findById(admin.getId()).isEmpty());
 
     }
 
