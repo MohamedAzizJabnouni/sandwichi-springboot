@@ -9,8 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Testcontainers
 public class AdministrateurControllerIntegrationTest {
-
-
 
     @Autowired
     private MockMvc mockMvc;
+    @Container
+    //@ServiceConnection
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres");
 
     @Autowired
     private AdministrateurRepository administrateurRepository;
@@ -37,6 +45,15 @@ public class AdministrateurControllerIntegrationTest {
     private AdministrateurService administrateurService;
 
     private List<Administrateur> administrateurs;
+
+    @DynamicPropertySource
+    static void dynamicConfiguration(DynamicPropertyRegistry registry){
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+
+
+    }
 
     @BeforeEach
     public void setup() {
