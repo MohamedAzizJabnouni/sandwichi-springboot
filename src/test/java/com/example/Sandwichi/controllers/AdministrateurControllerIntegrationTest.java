@@ -4,6 +4,7 @@ import com.example.Sandwichi.entities.Administrateur;
 import com.example.Sandwichi.repositories.AdministrateurRepository;
 import com.example.Sandwichi.services.AdministrateurService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class AdministrateurControllerIntegrationTest {
     private List<Administrateur> administrateurs;
 
     @DynamicPropertySource
-    static void dynamicConfiguration(DynamicPropertyRegistry registry){
+    static void dynamicConfiguration(@NotNull DynamicPropertyRegistry registry){
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
